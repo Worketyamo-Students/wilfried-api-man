@@ -1,7 +1,7 @@
 {
-  "name": "@worketyamo/ts-starter",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "y",
+  "version": "y",
+  "main": "y",
   "engines": {
     "node": ">=20.12.0",
     "yarn": ">=1.22.19",
@@ -13,9 +13,9 @@
     "start": "node dist/app.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "WORKETYAMO",
-  "description": "",
+  "author": "y",
+  "license": "y",
+  "description": "y",
   "devDependencies": {
     "@eslint/js": "^9.5.0",
     "@types/compression": "^1.7.5",
@@ -34,14 +34,28 @@
     "typescript-eslint": "^7.13.1"
   },
   "dependencies": {
+    "@prisma/client": "^5.16.1",
+    "@types/bcrypt": "^5.0.2",
     "@types/morgan": "^1.9.9",
+    "bcrypt": "^5.1.1",
     "compression": "^1.7.4",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "env-var": "^7.5.0",
     "express": "^4.19.2",
     "express-rate-limit": "^7.3.1",
+    "generator": "^1.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwt": "^0.2.0",
+    "mongodb": "^6.8.0",
     "morgan": "^1.10.0",
+    "nodemailer": "^6.9.14",
+    "otp": "^1.1.2",
+    "otp-generator": "^4.0.1",
+    "prisma": "^5.16.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
-  }
+  },
+  "repository": "y",
+  "private": true
 }
