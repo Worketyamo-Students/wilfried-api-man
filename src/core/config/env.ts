@@ -24,7 +24,8 @@ export const envs = {
 	MONGO_DB_NAME: get('MONGO_DB_NAME').default('worketyamo').asString(),
 // info personnel
     EMAIL_USER:"wilfriedclementedzengafana7@gmail.com",
-    EMAIL_PASS:"kluy dqka klfd lgmi"
+    EMAIL_PASS:"kluy dqka klfd lgmi",
+    JWT_SECRET : "sdfgjhkljkuhgyjdrfjhkljhdfgrsedtgfhjklhdfghjnk"
 
 };
 // Implementing regex:

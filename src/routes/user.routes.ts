@@ -24,4 +24,6 @@ routerUser.post("/",controlleursUser.createUser)
 routerUser.put("/",controlleursUser.updateUser)
 // verifyotp
 routerUser.post("/verify-otp", controlleursUser.verifyUserOTP);
+routerUser.post("/login", controlleursUser.loginUser);
+routerUser.delete("/",controlleursUser.deleteUser);
 export default routerUser

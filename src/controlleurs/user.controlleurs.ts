@@ -1,4 +1,4 @@
-import * as user from "./../routes/user.routes"
+
 
 /**
     * @description      : 
@@ -21,6 +21,8 @@ import { sendMail } from "../send-email";
 import  otpGenerator  from 'otp-generator';
 import { verify, Verify } from "crypto";
 import  chalk  from 'chalk';
+import { jwt } from "jsonwebtoken";
+import { envs } from "../core/config/env";
 const prisma = new PrismaClient()
 // exécution de la fonction
 const controlleursUser = {
@@ -125,41 +127,67 @@ const controlleursUser = {
         }
     },
         
+    loginUser: async (req: Request, res: Response) => {
+        try {
+            const { email, password } = req.body;
     
+            const user = await prisma.user.findFirst({
+                where: {
+                    email,
+                },
+            });
+    
+            if (!user) {
+                res.status(HttpCode.UNAUTHORIZED).send({ message: "Invalid email or password" });
+            } else {
+                const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+                if (!isPasswordValid) {
+                    res.status(HttpCode.UNAUTHORIZED).send({ message: "Invalid email or password" });
+                } else {
+                    // Generate a JWT token for the user
+                    const token = jwt.sign({ userId: user.user_id }, envs.JWT_SECRET!, { expiresIn: "1h" });
+    
+                    res.json({ message: "Logged in successfully", token });
+                }
+            }
+        } catch (error) {
+            console.error(chalk.red(error));
+            res.status(HttpCode.INTERNAL_SERVER_ERROR).send({ message: "Internal server error" });
+        }
+    },
         
 
-
-
-
-
-
-
-     updateUser: async (req: Request, res: Response) => {
+    updateUser: async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const { name, email, password, age, role } = req.body;
+            const { name, email, password, age } = req.body;
+    
             const modify = await prisma.user.update({
                 where: {
-                    user_id: id,
+                    user_id:(id),
+                    email
                 },
                 data: {
                     name,
                     email,
-                    password,
-                    age,
-                    role
+                    password: password ? await bcrypt.hash(password, 10) : undefined,
+                    age
                 },
-            })
+            });
+    
             if (modify) {
-                res.json({ "message": "user's info successfully modify" })
-                console.log(modify)
+                res.json({ message: "User's info successfully modified" });
+            } else {
+                res.status(HttpCode.NOT_FOUND).send({ message: "User not found" });
             }
-            else res.send({ msg: "could not create certification" })
         } catch (error) {
-            console.error(chalk.red(error))
+            console.error(chalk.red(error));
+            res.status(HttpCode.INTERNAL_SERVER_ERROR).send({ message: "Internal server error" });
         }
     },
-    
+
+
 
     deleteUser: async (req: Request, res: Response) => {
         const { id } = req.params; // Assuming the user ID is passed as a parameter in the request
@@ -187,6 +215,10 @@ const controlleursUser = {
             res.status(HttpCode.INTERNAL_SERVER_ERROR).send({ message: "Internal server error" });
         }
     },
+
+    
+    
+
 }
  
 export default controlleursUser
