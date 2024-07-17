@@ -1,3 +1,4 @@
+import * as user from "./../routes/user.routes"
 
 /**
     * @description      : 
@@ -14,11 +15,12 @@
 import { Request,Response } from "express";
 import { HttpCode } from "../core/constants";
 import { Prisma, PrismaClient } from "@prisma/client";
-import chalk from "chalk";
 import { create } from "domain";
 import bcrypt from 'bcrypt';
 import { sendMail } from "../send-email";
 import  otpGenerator  from 'otp-generator';
+import { verify, Verify } from "crypto";
+import  chalk  from 'chalk';
 const prisma = new PrismaClient()
 // exécution de la fonction
 const controlleursUser = {
@@ -58,7 +60,8 @@ const controlleursUser = {
         try{
         const {name,email,password,age} =req.body
         const passhash = await bcrypt.hash(password,10)
-        const otpsend = otpGenerator.generate(6,{upperCase:false,specialChars:false});
+        const expire = new Date( Date.now()  +10*60*100)
+        const otp = otpGenerator.generate(6,{digits:true,lowerCaseAlphabets:false, upperCaseAlphabets:false,specialChars:false});
         const user = await prisma.user.create(
             {
                 data: {
@@ -67,23 +70,68 @@ const controlleursUser = {
                     password:passhash,
                     age,
                     otp :{
-                        code : parseInt(otpsend),
+                        code:otp,
                         expired :false,
-                        expireAt : new Date  
+                        expiredAt : expire
                       
                     }
                 },
             }
         );
-        await sendMail(email,'Email verification',`your OTP is : ${otpsend}`)
-            if (user) {
-                res.json({ "message": "user successfully created" })
-                console.log(user)
-            } else res.send({ msg: "could not create user" })
+        await sendMail(email,'Email verification',`your OTP is : ${user.otp?.code}`)
+        res.json({msg: "user created"})
         }catch(error) {
           console.log(chalk.red(error))
         }
      },
+    
+     verifyUserOTP: async (req: Request, res: Response) => {
+        try {
+            const { email, otp } = req.body;
+            const expire = new Date( Date.now()  +10*60*100)
+            const user = await prisma.user.findFirst({
+                where: {
+                    email,
+                    otp: {
+                        code: otp,
+                        expired: false,
+                        expiredAt: expire,
+                    },
+                },
+            });
+    
+            if (!user) {
+                res.status(HttpCode.UNAUTHORIZED).send({ message: "Invalid OTP or OTP expired" });
+            } else {
+                // Update the user's OTP status to expired
+                await prisma.user.update({
+                    where: {
+                        user_id: user.user_id,
+                    },
+                    data: {
+                        otp: {
+                            code: user.otp.code,
+                            expired: true,
+                            expiredAt: user.otp.expiredAt,
+                        },
+                    },
+                });
+    
+                res.json({ message: "OTP verified successfully" });
+            }
+        } catch (error) {
+            console.error(chalk.red(error));
+            res.status(HttpCode.INTERNAL_SERVER_ERROR).send({ message: "Internal server error" });
+        }
+    },
+        
+    
+        
+
+
+
+
+
 
 
      updateUser: async (req: Request, res: Response) => {

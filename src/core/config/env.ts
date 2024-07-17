@@ -23,7 +23,7 @@ export const envs = {
 	MONGO_INITDB_ROOT_PASSWORD: get('MONGO_INITDB_ROOT_PASSWORD').default('test123').asString(),
 	MONGO_DB_NAME: get('MONGO_DB_NAME').default('worketyamo').asString(),
 // info personnel
-    EMAIL_USER:"wilfriedclementedzengafana7@.com",
+    EMAIL_USER:"wilfriedclementedzengafana7@gmail.com",
     EMAIL_PASS:"kluy dqka klfd lgmi"
 
 };

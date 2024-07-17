@@ -36,9 +36,9 @@ model User {
 }
 
 type OTP {
-  code  Int
+  code  String
   expired Boolean @default(false)
-  expireAt DateTime  
+  expiredAt DateTime  
 
 }
 
